@@ -80,6 +80,7 @@ fun App() {
 
                 Text("miles away")
 
+                Text("Release the button when you hear the thunder")
                 CustomButton(
                     modifier = Modifier.pointerInput(buttonState) {
                         awaitPointerEventScope {
