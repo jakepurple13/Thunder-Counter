@@ -1,12 +1,17 @@
 package com.programmersbox.thundercounter
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,8 +19,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
@@ -47,10 +54,28 @@ fun App() {
                 value = 0f
             }
             while (buttonState == ButtonState.Pressed) {
-                value += 1f
                 delay(1000)
+                value += 1f
             }
         }
+
+        val animatable = remember(buttonState) { Animatable(0f) }
+
+        LaunchedEffect(time) {
+            animatable.snapTo(0f)
+            animatable.animateTo(1f, animationSpec = tween(1000))
+        }
+
+        val progressColors by remember {
+            derivedStateOf { animatable.value % 2f == 0f }
+        }
+
+        @Composable
+        fun progressColor(progressColors: Boolean = true) = if (progressColors)
+            MaterialTheme.colorScheme.primary
+        else
+            MaterialTheme.colorScheme.surfaceVariant
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -68,15 +93,33 @@ fun App() {
                 Text("seconds / 5 == miles away")
                 Text("${time.roundToInt()}s / 5")
 
-                Text(
-                    roundToDecimals(
-                        number = animateFloatAsState(
-                            time / 5
-                        ).value,
-                        decimals = 1
-                    ),
-                    fontSize = 72.sp
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(130.dp)
+                ) {
+                    androidx.compose.animation.AnimatedVisibility(
+                        buttonState == ButtonState.Pressed,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { animatable.value },
+                            modifier = Modifier.size(120.dp),
+                            color = progressColor(!progressColors),
+                            trackColor = progressColor(progressColors)
+                        )
+                    }
+
+                    Text(
+                        roundToDecimals(
+                            number = animateFloatAsState(
+                                time / 5
+                            ).value,
+                            decimals = 1
+                        ),
+                        fontSize = 72.sp
+                    )
+                }
 
                 Text("miles away")
 
