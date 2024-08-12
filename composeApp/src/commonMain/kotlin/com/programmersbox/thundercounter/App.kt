@@ -117,7 +117,7 @@ fun App() {
                             ).value,
                             decimals = 1
                         ),
-                        fontSize = 72.sp
+                        fontSize = 60.sp
                     )
                 }
 
