@@ -23,8 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +39,7 @@ import kotlin.math.roundToInt
 @Preview
 fun App() {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+        colorScheme = ColorScheme(isSystemInDarkTheme())
     ) {
         var buttonState by remember { mutableStateOf(ButtonState.Idle) }
         val time by produceState(key1 = buttonState, initialValue = 0f) {
