@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -46,10 +45,10 @@ fun App() {
     ) {
         var buttonState by remember { mutableStateOf(ButtonState.Idle) }
         val time by produceState(key1 = buttonState, initialValue = 0f) {
-            if(buttonState == ButtonState.Pressed) {
+            if (buttonState == ButtonState.Pressed) {
                 value = 0f
             }
-            while(buttonState == ButtonState.Pressed) {
+            while (buttonState == ButtonState.Pressed) {
                 value += 1f
                 delay(1000)
             }
@@ -72,9 +71,12 @@ fun App() {
                 Text("${time.roundToInt()}s / 5")
 
                 Text(
-                    animateFloatAsState(
-                        time / 5
-                    ).value.roundDecimals(1).toString(),
+                    roundToDecimals(
+                        number = animateFloatAsState(
+                            time / 5
+                        ).value,
+                        decimals = 1
+                    ),
                     fontSize = 72.sp
                 )
 
@@ -108,7 +110,7 @@ fun CustomButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
     val containerColor = colors.containerColor
     val contentColor = colors.contentColor
@@ -136,9 +138,3 @@ fun CustomButton(
 }
 
 private enum class ButtonState { Pressed, Idle }
-
-fun Float.roundDecimals(decimals: Int): Float {
-    var multiplier = 1.0f
-    repeat(decimals) { multiplier *= 10 }
-    return round(this * multiplier) / multiplier
-}

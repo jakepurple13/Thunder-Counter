@@ -5,3 +5,5 @@ class WasmPlatform: Platform {
 }
 
 actual fun getPlatform(): Platform = WasmPlatform()
+
+actual fun roundToDecimals(number: Float, decimals: Int): String = number.toString().take(2 + decimals)
